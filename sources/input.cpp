@@ -41,7 +41,7 @@ void	processCreate(std::stringstream &ss, Bank &bank)
 	}
 	catch(const std::exception& e)
 	{
-		std::cerr << e.what() << std::endl;
+		std::cerr << RED << e.what() << WHITE << std::endl;
 	}
 }
 
@@ -62,7 +62,7 @@ void	processMoney(std::stringstream &ss, Bank &bank, void (Bank::*method)(int, d
 	}
 	catch(const std::exception& e)
 	{
-		std::cerr << e.what() << std::endl;
+		std::cerr << RED << e.what() << WHITE << std::endl;
 	}
 }
 
@@ -79,7 +79,7 @@ void	processShow(std::stringstream &ss, Bank &bank)
 	}
 	catch(const std::exception& e)
 	{
-		std::cerr << e.what() << std::endl;
+		std::cerr << RED << e.what() << WHITE << std::endl;
 	}
 }
 
@@ -110,6 +110,6 @@ int	processInput(const std::string &input, Bank &bank)
 	else if (command == "exit")
 		return (STOP_LOOP);
 	else
-		std::cerr << "Invalid command!" << std::endl;
+		std::cerr << RED << "Invalid command!" WHITE << std::endl;
 	return (CONTINUE_LOOP);
 }

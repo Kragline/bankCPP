@@ -25,7 +25,7 @@ void	Bank::deposit(int accountId, double amount)
 	Account	*acc = findAccount(accountId);
 	if (acc == nullptr)
 	{
-		std::cerr << "Account with the ID of " << accountId << " doesn't exist!" << std::endl;
+		std::cerr << RED "Account with the ID of " << accountId << " doesn't exist!" WHITE << std::endl;
 		return ;
 	}
 	acc->deposit(amount);
@@ -37,7 +37,7 @@ void	Bank::withdraw(int accountId, double amount)
 	Account	*acc = findAccount(accountId);
 	if (acc == nullptr)
 	{
-		std::cerr << "Account with the ID of " << accountId << " doesn't exist!" << std::endl;
+		std::cerr << RED "Account with the ID of " << accountId << " doesn't exist!" WHITE << std::endl;
 		return ;
 	}
 	try
@@ -47,7 +47,7 @@ void	Bank::withdraw(int accountId, double amount)
 	}
 	catch(const std::exception& e)
 	{
-		std::cerr << "Withdraw for [" << accountId << "] " << acc->getOwner() << " failed: " << e.what() << std::endl;
+		std::cerr << RED "Withdraw for [" << accountId << "] " << acc->getOwner() << " failed: " << e.what() << WHITE << std::endl;
 	}
 }
 
@@ -55,13 +55,13 @@ void	Bank::showAccount(int accountId)
 {
 	if (_accounts.empty())
 	{
-		std::cerr << "No accounts in the bank!" << std::endl;
+		std::cerr << RED "No accounts in the bank!" WHITE << std::endl;
 		return ;
 	}
 	Account	*acc = findAccount(accountId);
 	if (acc == nullptr)
 	{
-		std::cerr << "Account with the ID of " << accountId << " doesn't exist!" << std::endl;
+		std::cerr << RED "Account with the ID of " << accountId << " doesn't exist!" WHITE << std::endl;
 		return ;
 	}
 	acc->printAllInfo();
@@ -71,7 +71,7 @@ void	Bank::listAccounts() const
 {
 	if (_accounts.empty())
 	{
-		std::cerr << "No accounts in the bank!" << std::endl;
+		std::cerr << RED "No accounts in the bank!" WHITE << std::endl;
 		return ;
 	}
 
@@ -85,15 +85,15 @@ void	Bank::listAccounts() const
 
 void	Bank::printUsage() const
 {
-	std::cout << "All avilable commands" << std::endl << std::endl;
+	std::cout << BLUE "Avilable commands" WHITE << std::endl;
 
-	std::cout << "create <owner name>" << std::endl;
-	std::cout << "deposit <id> <amount>" << std::endl;
-	std::cout << "withdraw <id> <amount>" << std::endl;
-	std::cout << "show <id>" << std::endl;
-	std::cout << "list" << std::endl;
+	std::cout << BLUE "1)" GREEN " create" PURPLE " <owner name>" WHITE << std::endl;
+	std::cout << BLUE "2)" GREEN " deposit" PURPLE " <id> <amount>" WHITE << std::endl;
+	std::cout << BLUE "3)" GREEN " withdraw" PURPLE " <id> <amount>" WHITE << std::endl;
+	std::cout << BLUE "4)" GREEN " show" PURPLE " <id>" WHITE << std::endl;
+	std::cout << BLUE "5)" GREEN " list" WHITE << std::endl;
 
-	std::cout << "exit" << std::endl << std::endl;
+	std::cout << BLUE "6)" GREEN " exit" WHITE << std::endl << std::endl;
 }
 
 Bank::~Bank() {}

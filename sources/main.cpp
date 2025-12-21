@@ -5,7 +5,7 @@ int	main()
 	Bank	bank;
 	std::string	userInput;
 
-	std::cout << "Welcome to the bank" << std::endl << std::endl;
+	std::cout << std::endl << YELLOW "\tWelcome to the bank" WHITE << std::endl << std::endl;
 	bank.printUsage();
 	while (true)
 	{
@@ -19,6 +19,6 @@ int	main()
 			break ;
 		}
 	}
-	std::cout << std:: endl << "Bank was closed!" << std::endl;
+	std::cout << std:: endl << YELLOW "\tBank was closed!" WHITE << std::endl << std::endl;
 	return (0);
 }
