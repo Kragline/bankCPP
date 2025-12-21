@@ -3,20 +3,28 @@ NAME = bank
 CPP = c++
 CPP_FLAGS = -Wall -Wextra -Werror
 
-FILENAMES = main Bank Account input
-SOURCES = $(addsuffix .cpp, $(FILENAMES))
-OBJECTS = $(addsuffix .o, $(FILENAMES))
+HEADER_DIR = include/
+SOURCES_DIR = sources/
+OBJECTS_DIR = objects/
+
+FILENAMES = Account Bank input main
+
+SOURCES = $(addsuffix .c, $(addprefix $(SOURCES_DIR), $(FILENAMES)))
+OBJECTS = $(addsuffix .o, $(addprefix $(OBJECTS_DIR), $(FILENAMES)))
 
 all: $(NAME)
 
 $(NAME): $(OBJECTS)
-	$(CPP) $(CPP_FLAGS) $(OBJECTS) -o $(NAME)
+	$(CPP) $(CPP_FLAGS) -I$(HEADER_DIR) $(OBJECTS) -o $(NAME)
 
-%.o: %.cpp
-	$(CPP) $(CPP_FLAGS) -c $< -o $@
+$(OBJECTS_DIR):
+	mkdir -p $(OBJECTS_DIR)
+
+$(OBJECTS_DIR)%.o: $(SOURCES_DIR)%.cpp | $(OBJECTS_DIR)
+	$(CPP) -c $(CPP_FLAGS) -I$(HEADER_DIR) $< -o $@
 
 clean:
-	rm -f $(OBJECTS)
+	rm -rf $(OBJECTS_DIR)
 
 fclean: clean
 	rm -f $(NAME)
