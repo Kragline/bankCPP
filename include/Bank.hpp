@@ -20,7 +20,8 @@ public:
 
 	Bank	&operator=(const Bank &other) = delete;
 
-	void	createAccount(const std::string& owner);
+	void	createAccount(const std::string &owner);
+
 	Account	*findAccount(int accountId);
 
 	void	deposit(int accountId, double amount);
@@ -32,7 +33,10 @@ public:
 	void	printUsage() const ;
 
 	void	saveToFile(const std::string &filename);
-	void	loadFromFile(const std::string &filename);
+	void	overrideFromFile(const std::string &filename);
 
 	~Bank();
+private:
+	void	_parseCsvLine(const std::string &line, int &ownerId, std::string &owner, double &balance);
+	void	_createAccount(int ownerId, const std::string &owner, double balance);
 };

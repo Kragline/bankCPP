@@ -7,19 +7,36 @@ Bank::Bank() : _nextAccountId(0)
 
 	std::ifstream	csvFile("data.csv");
 
-	if (csvFile.peek() != std::fstream::traits_type::eof())
+	if (csvFile.peek() != std::fstream::traits_type::eof()) // if file is empty dont load anything
 	{
 		csvFile.close();
-		loadFromFile("data.csv");
+		overrideFromFile("data.csv");
 	}
 	csvFile.close();
 }
 
 void	Bank::createAccount(const std::string& owner)
 {
-	_accounts.emplace_back(Account(_nextAccountId, owner));
+	_accounts.emplace_back(_nextAccountId, owner);
 	_nextAccountId++;
 }
+
+void	Bank::_createAccount(int ownerId, const std::string &owner, double balance)
+{
+	if (ownerId < 0)
+		throw std::runtime_error("ID cant be negative");
+		
+	if (findAccount(ownerId))
+		throw std::runtime_error("Duplicate account ID in file");
+	
+	if (balance < 0)
+		throw std::runtime_error("Balance cant be negative");
+	
+	_accounts.emplace_back(ownerId, owner, balance);
+	if (ownerId >= _nextAccountId)
+		_nextAccountId = ownerId + 1;
+}
+
 
 Account	*Bank::findAccount(int accountId)
 {
@@ -116,7 +133,7 @@ void	Bank::printUsage() const
 	std::cout << BLUE "4)" GREEN " show" PURPLE " <id>" WHITE << std::endl;
 	std::cout << BLUE "5)" GREEN " list" WHITE << std::endl;
 	std::cout << BLUE "6)" GREEN " save" PURPLE " <filename>" WHITE << std::endl;
-	std::cout << BLUE "7)" GREEN " load" PURPLE " <filename>" WHITE << std::endl;
+	std::cout << BLUE "7)" GREEN " override" PURPLE " <filename>" WHITE << std::endl;
 	std::cout << BLUE "8)" GREEN " exit" WHITE << std::endl << std::endl;
 }
 
@@ -132,58 +149,51 @@ void	Bank::saveToFile(const std::string &filename)
 	std::cout << GREEN "-- Data save finished successfully! --" WHITE << std::endl;
 }
 
-void	Bank::loadFromFile(const std::string &filename)
+void	Bank::_parseCsvLine(const std::string &line, int &ownerId, std::string &owner, double &balance)
+{
+	try
+	{
+		std::string			ownerIdStr;
+		std::string			balanceStr;
+		std::stringstream	ss(line);
+
+		getArgumentFromStream(ss, ownerIdStr, "Specify owner ID in the file", ';');
+		convertNumber(ownerIdStr, ownerId);
+		getArgumentFromStream(ss, owner, "Specify owner name in the file", ';');
+		getArgumentFromStream(ss, balanceStr, "Specify balance in the file", '\n');
+		convertNumber(balanceStr, balance);
+	}
+	catch(const std::exception& e)
+	{
+		throw ;
+	}
+}
+
+void	Bank::overrideFromFile(const std::string &filename)
 {
 	std::cout << GREEN "-- Importing data from " << filename << "... --" << WHITE << std::endl;
 
+	std::string		line;
 	std::ifstream	csvFile(filename);
 
 	if (!csvFile.is_open())
-		throw std::runtime_error("Failed to open " + filename);
+		throw std::runtime_error("Failed to open " + filename + "\n-- Data import stopped --");
 
 	if (csvFile.peek() == std::fstream::traits_type::eof())
-		throw std::runtime_error(filename + " is empty");
+		throw std::runtime_error(filename + " is empty\n-- Data import stopped --");
 
-	std::string	line;
+	_accounts.clear();
+	_nextAccountId = 0;
 	while (std::getline(csvFile, line))
 	{
 		try
 		{
-			int							ownerID;
+			int							ownerId;
 			double						balance;
-			std::array<std::string, 3>	readData;
-			std::stringstream			ss(line);
-
-			getArgumentFromStream(ss, readData[0], "Specify owner ID in the file", ';');
-			convertNumber(readData[0], ownerID);
-			getArgumentFromStream(ss, readData[1], "Specify owner name in the file", ';');
-			getArgumentFromStream(ss, readData[2], "Specify balance in the file", '\n');
-			convertNumber(readData[2], balance);
-
-			if (balance < 0)
-			{
-				std::cerr << RED "Balance cant be negative" WHITE << std::endl;
-				continue;
-			}
-
-			Account	*acc = findAccount(ownerID);
-			if (!acc)
-			{
-				createAccount(readData[1]);
-				_accounts[_accounts.size() - 1].deposit(balance);
-
-				continue;
-			}
-			if (readData[1] != acc->getOwner())
-			{
-				std::cerr << RED "Error: same ID for sevral accounts -> (" << ownerID << ")\nBut different owners -> existing: " << acc->getOwner() << ", new: " << readData[1] << WHITE << std::endl;
-				continue;
-			}
-			double	currentBalance = acc->getBalance();
-			if (balance > currentBalance)
-				acc->deposit(balance - currentBalance);
-			else
-				acc->deposit(currentBalance - balance);
+			std::string					owner;
+			
+			_parseCsvLine(line, ownerId, owner, balance);
+			_createAccount(ownerId, owner, balance);
 		}
 		catch(const std::exception& e)
 		{

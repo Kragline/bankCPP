@@ -114,8 +114,8 @@ int	processInput(const std::string &input, Bank &bank)
 		bank.listAccounts();
 	else if (command == "save")
 		processFile(ss, bank, &Bank::saveToFile);
-	else if (command == "load")
-		processFile(ss, bank, &Bank::loadFromFile);
+	else if (command == "override")
+		processFile(ss, bank, &Bank::overrideFromFile);
 	else if (command == "exit")
 		return (STOP_LOOP);
 	else

@@ -23,6 +23,7 @@ private:
 public:
 	Account() = delete;
 	Account(int Id, const std::string &owner);
+	Account(int Id, const std::string &owner, double balance); // used in csv parsing only
 	Account(const Account &other);
 
 	Account	&operator=(const Account &other);

@@ -5,6 +5,13 @@ Account::Account(int Id, const std::string &owner) : _accountId(Id), _balance(0)
 	std::cout << "Account [" << _accountId << "] " << _ownerName << " was created!" << std::endl;
 }
 
+Account::Account(int Id, const std::string &owner, double balance) : _accountId(Id), _balance(balance), _ownerName(owner)
+{
+	if (balance < 0)
+		throw std::runtime_error("Balance cant be negative");
+	std::cout << "Account [" << _accountId << "] " << _ownerName << " was created!" << std::endl;
+}
+
 Account::Account(const Account &other) : _accountId(other._accountId), _balance(other._balance), _ownerName(other._ownerName) {}
 
 Account	&Account::operator=(const Account &other)
