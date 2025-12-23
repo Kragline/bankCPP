@@ -1,15 +1,5 @@
 #include "input.hpp"
 
-template <typename T>
-void	convertNumber(const std::string &sValue, T &value)
-{
-	std::stringstream	valueStream(sValue);
-	valueStream >> value;
-
-	if (valueStream.fail())
-		throw std::runtime_error("Invalid numeric value");
-}
-
 std::string	trimString(std::string str)
 {
 	size_t	start = str.find_first_not_of(" \t");
@@ -45,7 +35,7 @@ void	processCreate(std::stringstream &ss, Bank &bank)
 	}
 }
 
-void	processMoney(std::stringstream &ss, Bank &bank, void (Bank::*method)(int, double))
+void	processFile(std::stringstream &ss, Bank &bank, void (Bank::*method)(int, double))
 {
 	int			accountId;
 	double		amount;
@@ -59,6 +49,21 @@ void	processMoney(std::stringstream &ss, Bank &bank, void (Bank::*method)(int, d
 		getArgumentFromStream(ss, amountStr, "Specify an amount id!", '\n');
 		convertNumber(amountStr, amount);
 		(bank.*method)(accountId, amount);
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << RED << e.what() << WHITE << std::endl;
+	}
+}
+
+void	processFile(std::stringstream &ss, Bank &bank, void (Bank::*method)(const std::string &))
+{
+	std::string	filename;
+
+	try
+	{
+		getArgumentFromStream(ss, filename, "Specify filename!", '\n');
+		(bank.*method)(filename);
 	}
 	catch(const std::exception& e)
 	{
@@ -100,13 +105,17 @@ int	processInput(const std::string &input, Bank &bank)
 	if (command == "create")
 		processCreate(ss, bank);
 	else if (command == "deposit")
-		processMoney(ss, bank, &Bank::deposit);
+		processFile(ss, bank, &Bank::deposit);
 	else if (command == "withdraw")
-		processMoney(ss, bank, &Bank::withdraw);
+		processFile(ss, bank, &Bank::withdraw);
 	else if (command == "show")
 		processShow(ss, bank);
 	else if (command == "list")
 		bank.listAccounts();
+	else if (command == "save")
+		processFile(ss, bank, &Bank::saveToFile);
+	else if (command == "load")
+		processFile(ss, bank, &Bank::loadFromFile);
 	else if (command == "exit")
 		return (STOP_LOOP);
 	else

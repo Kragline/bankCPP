@@ -2,14 +2,14 @@
 
 int	main()
 {
-	Bank	bank;
+	Bank		bank;
 	std::string	userInput;
 
-	std::cout << std::endl << YELLOW "\tWelcome to the bank" WHITE << std::endl << std::endl;
+	std::cout << std::endl << YELLOW "\tWelcome to the bankshell" WHITE << std::endl << std::endl;
 	bank.printUsage();
 	while (true)
 	{
-		std::cout << "Enter command -> ";
+		std::cout << GREEN_BOLD "💸 bankshell 💸" WHITE_BOLD " → " WHITE;
 		getline(std::cin, userInput);
 		if (!processInput(userInput, bank))
 			break ;
@@ -19,6 +19,6 @@ int	main()
 			break ;
 		}
 	}
-	std::cout << std:: endl << YELLOW "\tBank was closed!" WHITE << std::endl << std::endl;
+	std::cout << std:: endl << YELLOW "\tbankshell was closed!" WHITE << std::endl << std::endl;
 	return (0);
 }

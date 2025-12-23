@@ -1,8 +1,13 @@
 #pragma once
 
+#include <array>
 #include <vector>
 #include <algorithm>
+#include <fstream>
 #include "Account.hpp"
+
+#define TABLE_CHARS 50
+#define TABLE_WIDTH (TABLE_CHARS + 4)
 
 class Bank
 {
@@ -26,12 +31,8 @@ public:
 
 	void	printUsage() const ;
 
-	// TODO
-	void	saveToFile(const std::string& filename) const ;
-	void	loadFromFile(const std::string& filename);
+	void	saveToFile(const std::string &filename);
+	void	loadFromFile(const std::string &filename);
 
 	~Bank();
-private:
-	std::string	_trimString(std::string str) const ;
-
 };

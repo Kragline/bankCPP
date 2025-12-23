@@ -1,7 +1,7 @@
-NAME = bank
+NAME = bankshell
 
 CPP = c++
-CPP_FLAGS = -Wall -Wextra -Werror
+CPP_FLAGS = -Wall -Wextra -Werror -fsanitize=address -g3
 
 HEADER_DIR = include/
 SOURCES_DIR = sources/
