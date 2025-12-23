@@ -5,7 +5,6 @@ int	main()
 	Bank		bank;
 	std::string	userInput;
 
-	std::cout << std::endl << YELLOW "\tWelcome to the bankshell" WHITE << std::endl << std::endl;
 	bank.printUsage();
 	while (true)
 	{
@@ -19,6 +18,6 @@ int	main()
 			break ;
 		}
 	}
-	std::cout << std:: endl << YELLOW "\tbankshell was closed!" WHITE << std::endl << std::endl;
+	
 	return (0);
 }

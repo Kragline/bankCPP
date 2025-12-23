@@ -3,6 +3,8 @@
 
 Bank::Bank() : _nextAccountId(0)
 {
+	std::cout << std::endl << YELLOW "\tWelcome to the bankshell" WHITE << std::endl << std::endl;
+
 	std::ifstream	csvFile("data.csv");
 
 	if (csvFile.peek() != std::fstream::traits_type::eof())
@@ -120,14 +122,20 @@ void	Bank::printUsage() const
 
 void	Bank::saveToFile(const std::string &filename)
 {
+	std::cout << GREEN "-- Saving data to " << filename << "... --" << WHITE << std::endl;
+
 	std::ofstream	csvFile(filename);
 
 	for (size_t i = 0; i < _accounts.size(); i++)
 		csvFile << _accounts[i].getId() << ';' << _accounts[i].getOwner() << ';' << _accounts[i].getBalance() << '\n';
+	
+	std::cout << GREEN "-- Data save finished successfully! --" WHITE << std::endl;
 }
 
 void	Bank::loadFromFile(const std::string &filename)
 {
+	std::cout << GREEN "-- Importing data from " << filename << "... --" << WHITE << std::endl;
+
 	std::ifstream	csvFile(filename);
 
 	if (!csvFile.is_open())
@@ -152,13 +160,23 @@ void	Bank::loadFromFile(const std::string &filename)
 			getArgumentFromStream(ss, readData[2], "Specify balance in the file", '\n');
 			convertNumber(readData[2], balance);
 
+			if (balance < 0)
+			{
+				std::cerr << RED "Balance cant be negative" WHITE << std::endl;
+				continue;
+			}
+
 			Account	*acc = findAccount(ownerID);
 			if (!acc)
 			{
 				createAccount(readData[1]);
-				acc = findAccount(ownerID);
-				acc->deposit(balance);
+				_accounts[_accounts.size() - 1].deposit(balance);
 
+				continue;
+			}
+			if (readData[1] != acc->getOwner())
+			{
+				std::cerr << RED "Error: same ID for sevral accounts -> (" << ownerID << ")\nBut different owners -> existing: " << acc->getOwner() << ", new: " << readData[1] << WHITE << std::endl;
 				continue;
 			}
 			double	currentBalance = acc->getBalance();
@@ -169,14 +187,17 @@ void	Bank::loadFromFile(const std::string &filename)
 		}
 		catch(const std::exception& e)
 		{
-			csvFile.close();
-			std::cerr << e.what() << std::endl;
+			std::cerr << RED << e.what() << WHITE << std::endl;
 		}
 	}
+	csvFile.close();
+	std::cout << GREEN "-- Data import finished! --" WHITE << std::endl;
 }
 
 Bank::~Bank()
 {
 	if (!_accounts.empty())
 		saveToFile("data.csv");
+	
+	std::cout << std:: endl << YELLOW "\tbankshell was closed!" WHITE << std::endl << std::endl;
 }
