@@ -37,9 +37,37 @@ void	Bank::_createAccount(int ownerId, const std::string &owner, double balance)
 		_nextAccountId = ownerId + 1;
 }
 
+void	Bank::deleteAccount(int accountId)
+{
+	if (_accounts.empty())
+		throw std::runtime_error("No accounts in the bank");
+
+	if (accountId < 0)
+		throw std::runtime_error("ID cant be negative");
+
+	Account	*acc = findAccount(accountId);
+	if (acc == nullptr)
+		throw std::runtime_error("No account found with specified ID");
+	
+	std::vector<Account>::iterator	it = std::find_if(_accounts.begin(), _accounts.end(),
+	[accountId](const Account &acc)
+	{
+		return (accountId == acc.getId());
+	});
+
+	_accounts.erase(it);
+	if (accountId == _nextAccountId - 1)
+		_nextAccountId--;
+
+	std::cout << GREEN "Account (" << acc->getId() << ", " << acc->getOwner() << ", " << acc->getBalance()
+				<< ") waas deleted successfully!" WHITE << std::endl;
+}
 
 Account	*Bank::findAccount(int accountId)
 {
+	if (_accounts.empty())
+		throw std::runtime_error("No accounts in the bank");
+	
 	std::vector<Account>::iterator	it = std::find_if(_accounts.begin(), _accounts.end(),
 	[accountId](const Account &acc)
 	{
@@ -52,6 +80,9 @@ Account	*Bank::findAccount(int accountId)
 
 void	Bank::deposit(int accountId, double amount)
 {
+	if (_accounts.empty())
+		throw std::runtime_error("No accounts in the bank");
+
 	Account	*acc = findAccount(accountId);
 	if (acc == nullptr)
 	{
@@ -64,6 +95,9 @@ void	Bank::deposit(int accountId, double amount)
 
 void	Bank::withdraw(int accountId, double amount)
 {
+	if (_accounts.empty())
+		throw std::runtime_error("No accounts in the bank");
+
 	Account	*acc = findAccount(accountId);
 	if (acc == nullptr)
 	{
@@ -84,6 +118,9 @@ void	Bank::withdraw(int accountId, double amount)
 void	Bank::showAccount(int accountId)
 {
 	if (_accounts.empty())
+		throw std::runtime_error("No accounts in the bank");
+	
+	if (_accounts.empty())
 	{
 		std::cerr << RED "No accounts in the bank!" WHITE << std::endl;
 		return ;
@@ -100,10 +137,7 @@ void	Bank::showAccount(int accountId)
 void	Bank::listAccounts() const
 {
 	if (_accounts.empty())
-	{
-		std::cerr << RED "No accounts in the bank!" WHITE << std::endl;
-		return ;
-	}
+		throw std::runtime_error("No accounts in the bank");
 
 	std::cout << std::right << WHITE_BOLD;
 	for (int i = 0; i < TABLE_WIDTH; i++)
@@ -128,17 +162,21 @@ void	Bank::printUsage() const
 	std::cout << BLUE "Avilable commands" WHITE << std::endl;
 
 	std::cout << BLUE "1)" GREEN " create" PURPLE " <owner name>" WHITE << std::endl;
-	std::cout << BLUE "2)" GREEN " deposit" PURPLE " <id> <amount>" WHITE << std::endl;
-	std::cout << BLUE "3)" GREEN " withdraw" PURPLE " <id> <amount>" WHITE << std::endl;
-	std::cout << BLUE "4)" GREEN " show" PURPLE " <id>" WHITE << std::endl;
-	std::cout << BLUE "5)" GREEN " list" WHITE << std::endl;
-	std::cout << BLUE "6)" GREEN " save" PURPLE " <filename>" WHITE << std::endl;
-	std::cout << BLUE "7)" GREEN " override" PURPLE " <filename>" WHITE << std::endl;
-	std::cout << BLUE "8)" GREEN " exit" WHITE << std::endl << std::endl;
+	std::cout << BLUE "2)" GREEN " delete" PURPLE " <id>" WHITE << std::endl;
+	std::cout << BLUE "3)" GREEN " deposit" PURPLE " <id> <amount>" WHITE << std::endl;
+	std::cout << BLUE "4)" GREEN " withdraw" PURPLE " <id> <amount>" WHITE << std::endl;
+	std::cout << BLUE "5)" GREEN " show" PURPLE " <id>" WHITE << std::endl;
+	std::cout << BLUE "6)" GREEN " list" WHITE << std::endl;
+	std::cout << BLUE "7)" GREEN " save" PURPLE " <filename>" WHITE << std::endl;
+	std::cout << BLUE "8)" GREEN " override" PURPLE " <filename>" WHITE << std::endl;
+	std::cout << BLUE "9)" GREEN " exit" WHITE << std::endl << std::endl;
 }
 
 void	Bank::saveToFile(const std::string &filename)
 {
+	if (_accounts.empty())
+		throw std::runtime_error("No accounts in the bank");
+
 	std::cout << GREEN "-- Saving data to " << filename << "... --" << WHITE << std::endl;
 
 	std::ofstream	csvFile(filename);

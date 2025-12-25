@@ -21,6 +21,7 @@ public:
 	Bank	&operator=(const Bank &other) = delete;
 
 	void	createAccount(const std::string &owner);
+	void	deleteAccount(int accountId);
 
 	Account	*findAccount(int accountId);
 

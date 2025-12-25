@@ -20,7 +20,7 @@ void	getArgumentFromStream(std::stringstream &stream, std::string &argument, con
 		throw std::runtime_error(errorMsg);
 }
 
-void	processCreate(std::stringstream &ss, Bank &bank)
+void	createAction(std::stringstream &ss, Bank &bank)
 {
 	std::string	ownerName;
 	
@@ -35,7 +35,19 @@ void	processCreate(std::stringstream &ss, Bank &bank)
 	}
 }
 
-void	processFile(std::stringstream &ss, Bank &bank, void (Bank::*method)(int, double))
+void	listAction(const Bank &bank)
+{
+	try
+	{
+		bank.listAccounts();
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << RED << e.what() << WHITE << std::endl;
+	}
+}
+
+void	moneyActions(std::stringstream &ss, Bank &bank, void (Bank::*method)(int, double))
 {
 	int			accountId;
 	double		amount;
@@ -56,7 +68,7 @@ void	processFile(std::stringstream &ss, Bank &bank, void (Bank::*method)(int, do
 	}
 }
 
-void	processFile(std::stringstream &ss, Bank &bank, void (Bank::*method)(const std::string &))
+void	fileActions(std::stringstream &ss, Bank &bank, void (Bank::*method)(const std::string &))
 {
 	std::string	filename;
 
@@ -71,7 +83,7 @@ void	processFile(std::stringstream &ss, Bank &bank, void (Bank::*method)(const s
 	}
 }
 
-void	processShow(std::stringstream &ss, Bank &bank)
+void	accountActions(std::stringstream &ss, Bank &bank, void (Bank::*method)(int))
 {
 	int			ownerName;
 	std::string	ownerNameStr;
@@ -80,7 +92,7 @@ void	processShow(std::stringstream &ss, Bank &bank)
 	{
 		getArgumentFromStream(ss, ownerNameStr, "Specify account id!", '\n');
 		convertNumber(ownerNameStr, ownerName);
-		bank.showAccount(ownerName);
+		(bank.*method)(ownerName);
 	}
 	catch(const std::exception& e)
 	{
@@ -103,19 +115,21 @@ int	processInput(const std::string &input, Bank &bank)
 	command = trimString(command);
 
 	if (command == "create")
-		processCreate(ss, bank);
+		createAction(ss, bank);
+	else if (command == "delete")
+		accountActions(ss, bank, &Bank::deleteAccount);
 	else if (command == "deposit")
-		processFile(ss, bank, &Bank::deposit);
+		moneyActions(ss, bank, &Bank::deposit);
 	else if (command == "withdraw")
-		processFile(ss, bank, &Bank::withdraw);
+		moneyActions(ss, bank, &Bank::withdraw);
 	else if (command == "show")
-		processShow(ss, bank);
+		accountActions(ss, bank, &Bank::showAccount);
 	else if (command == "list")
-		bank.listAccounts();
+		listAction(bank);
 	else if (command == "save")
-		processFile(ss, bank, &Bank::saveToFile);
+		fileActions(ss, bank, &Bank::saveToFile);
 	else if (command == "override")
-		processFile(ss, bank, &Bank::overrideFromFile);
+		fileActions(ss, bank, &Bank::overrideFromFile);
 	else if (command == "exit")
 		return (STOP_LOOP);
 	else
