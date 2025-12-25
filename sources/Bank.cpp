@@ -51,7 +51,7 @@ void	Bank::deleteAccount(int accountId)
 
 	Account	*acc = findAccount(accountId);
 	if (acc == nullptr)
-		throw std::runtime_error("No account found with specified ID");
+		throw AccountNotFound();
 	
 	std::vector<Account>::iterator	it = std::find_if(_accounts.begin(), _accounts.end(),
 	[accountId](const Account &acc)
@@ -64,7 +64,7 @@ void	Bank::deleteAccount(int accountId)
 		_nextAccountId--;
 
 	std::cout << GREEN "Account (" << acc->getId() << ", " << acc->getOwner() << ", " << acc->getBalance()
-				<< ") waas deleted successfully!" WHITE << std::endl;
+				<< ") was deleted successfully!" WHITE << std::endl;
 }
 
 Account	*Bank::findAccount(int accountId)
@@ -89,10 +89,7 @@ void	Bank::deposit(int accountId, double amount)
 
 	Account	*acc = findAccount(accountId);
 	if (acc == nullptr)
-	{
-		std::cerr << RED "Account with the ID of " << accountId << " doesn't exist!" WHITE << std::endl;
-		return ;
-	}
+		throw AccountNotFound();
 	acc->deposit(amount);
 	std::cout << "Deposit for [" << accountId << "] " << acc->getOwner() << " was successfully completed!" << std::endl;
 }
@@ -104,10 +101,8 @@ void	Bank::withdraw(int accountId, double amount)
 
 	Account	*acc = findAccount(accountId);
 	if (acc == nullptr)
-	{
-		std::cerr << RED "Account with the ID of " << accountId << " doesn't exist!" WHITE << std::endl;
-		return ;
-	}
+		throw AccountNotFound();
+	
 	try
 	{
 		acc->withdraw(amount);
@@ -126,10 +121,8 @@ void	Bank::showAccount(int accountId)
 	
 	Account	*acc = findAccount(accountId);
 	if (acc == nullptr)
-	{
-		std::cerr << RED "Account with the ID of " << accountId << " doesn't exist!" WHITE << std::endl;
-		return ;
-	}
+		throw AccountNotFound();
+	
 	acc->printAllInfo();
 }
 
@@ -251,12 +244,17 @@ Bank::~Bank()
 
 const char	*Bank::BankEmpty::what() const throw()
 {
-	return ("No accounts in the bank");
+	return ("No accounts in the bank.");
+}
+
+const char	*Bank::AccountNotFound::what() const throw()
+{
+	return ("No account found with the specified ID.");
 }
 
 Bank::NegativeValue::NegativeValue(const std::string &valueName)
 {
-	_errorStr = valueName + " cant be negative";
+	_errorStr = valueName + " cant be negative.";
 }
 
 const char	*Bank::NegativeValue::what() const throw()

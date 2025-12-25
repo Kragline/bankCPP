@@ -47,6 +47,12 @@ private:
 		virtual const char	*what() const throw();
 	};
 
+	class AccountNotFound : public std::exception
+	{
+	public:
+		virtual const char	*what() const throw();
+	};
+
 	class NegativeValue : public std::exception
 	{
 		std::string	_errorStr;

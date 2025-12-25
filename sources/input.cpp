@@ -58,7 +58,7 @@ void	moneyActions(std::stringstream &ss, Bank &bank, void (Bank::*method)(int, d
 	{
 		getArgumentFromStream(ss, accountIdStr, "Specify account id!", ' ');
 		convertNumber(accountIdStr, accountId);
-		getArgumentFromStream(ss, amountStr, "Specify an amount id!", '\n');
+		getArgumentFromStream(ss, amountStr, "Specify amount of money!", '\n');
 		convertNumber(amountStr, amount);
 		(bank.*method)(accountId, amount);
 	}
