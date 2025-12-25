@@ -40,4 +40,22 @@ public:
 private:
 	void	_parseCsvLine(const std::string &line, int &ownerId, std::string &owner, double &balance);
 	void	_createAccount(int ownerId, const std::string &owner, double balance);
+
+	class BankEmpty : public std::exception
+	{
+	public:
+		virtual const char	*what() const throw();
+	};
+
+	class NegativeValue : public std::exception
+	{
+		std::string	_errorStr;
+
+	public:
+		NegativeValue(const std::string &valueName);
+
+		virtual const char	*what() const throw();
+
+		virtual ~NegativeValue() throw();
+	};
 };

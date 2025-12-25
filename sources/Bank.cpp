@@ -24,13 +24,17 @@ void	Bank::createAccount(const std::string& owner)
 void	Bank::_createAccount(int ownerId, const std::string &owner, double balance)
 {
 	if (ownerId < 0)
-		throw std::runtime_error("ID cant be negative");
-		
-	if (findAccount(ownerId))
-		throw std::runtime_error("Duplicate account ID in file");
+		throw NegativeValue("ID");
+	
+	try
+	{
+		if (findAccount(ownerId))
+			throw std::runtime_error("Duplicate account ID in file");
+	}
+	catch(const Bank::BankEmpty& e) {} // Do nothing if bank is empty, just comtinue uploading data
 	
 	if (balance < 0)
-		throw std::runtime_error("Balance cant be negative");
+		throw NegativeValue("Balance");;
 	
 	_accounts.emplace_back(ownerId, owner, balance);
 	if (ownerId >= _nextAccountId)
@@ -40,10 +44,10 @@ void	Bank::_createAccount(int ownerId, const std::string &owner, double balance)
 void	Bank::deleteAccount(int accountId)
 {
 	if (_accounts.empty())
-		throw std::runtime_error("No accounts in the bank");
+		throw BankEmpty();
 
 	if (accountId < 0)
-		throw std::runtime_error("ID cant be negative");
+		throw NegativeValue("ID");
 
 	Account	*acc = findAccount(accountId);
 	if (acc == nullptr)
@@ -66,7 +70,7 @@ void	Bank::deleteAccount(int accountId)
 Account	*Bank::findAccount(int accountId)
 {
 	if (_accounts.empty())
-		throw std::runtime_error("No accounts in the bank");
+		throw BankEmpty();
 	
 	std::vector<Account>::iterator	it = std::find_if(_accounts.begin(), _accounts.end(),
 	[accountId](const Account &acc)
@@ -81,7 +85,7 @@ Account	*Bank::findAccount(int accountId)
 void	Bank::deposit(int accountId, double amount)
 {
 	if (_accounts.empty())
-		throw std::runtime_error("No accounts in the bank");
+		throw BankEmpty();
 
 	Account	*acc = findAccount(accountId);
 	if (acc == nullptr)
@@ -96,7 +100,7 @@ void	Bank::deposit(int accountId, double amount)
 void	Bank::withdraw(int accountId, double amount)
 {
 	if (_accounts.empty())
-		throw std::runtime_error("No accounts in the bank");
+		throw BankEmpty();
 
 	Account	*acc = findAccount(accountId);
 	if (acc == nullptr)
@@ -118,13 +122,8 @@ void	Bank::withdraw(int accountId, double amount)
 void	Bank::showAccount(int accountId)
 {
 	if (_accounts.empty())
-		throw std::runtime_error("No accounts in the bank");
+		throw BankEmpty();
 	
-	if (_accounts.empty())
-	{
-		std::cerr << RED "No accounts in the bank!" WHITE << std::endl;
-		return ;
-	}
 	Account	*acc = findAccount(accountId);
 	if (acc == nullptr)
 	{
@@ -137,7 +136,7 @@ void	Bank::showAccount(int accountId)
 void	Bank::listAccounts() const
 {
 	if (_accounts.empty())
-		throw std::runtime_error("No accounts in the bank");
+		throw BankEmpty();
 
 	std::cout << std::right << WHITE_BOLD;
 	for (int i = 0; i < TABLE_WIDTH; i++)
@@ -175,7 +174,7 @@ void	Bank::printUsage() const
 void	Bank::saveToFile(const std::string &filename)
 {
 	if (_accounts.empty())
-		throw std::runtime_error("No accounts in the bank");
+		throw BankEmpty();
 
 	std::cout << GREEN "-- Saving data to " << filename << "... --" << WHITE << std::endl;
 
@@ -249,3 +248,20 @@ Bank::~Bank()
 	
 	std::cout << std:: endl << YELLOW "\tbankshell was closed!" WHITE << std::endl << std::endl;
 }
+
+const char	*Bank::BankEmpty::what() const throw()
+{
+	return ("No accounts in the bank");
+}
+
+Bank::NegativeValue::NegativeValue(const std::string &valueName)
+{
+	_errorStr = valueName + " cant be negative";
+}
+
+const char	*Bank::NegativeValue::what() const throw()
+{
+	return (_errorStr.c_str());
+}
+
+Bank::NegativeValue::~NegativeValue() throw() {}
